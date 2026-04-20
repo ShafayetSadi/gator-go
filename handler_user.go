@@ -61,7 +61,7 @@ func handlerRegister(s *state, cmd command) error {
 		UpdatedAt: time.Now().UTC(),
 	})
 	if err != nil {
-		log.Fatal("couldn't create user: %v", err)
+		log.Fatalf("couldn't create user: %v", err)
 	}
 
 	err = s.config.SetUser(user.Username)

@@ -13,7 +13,7 @@ func handlerReset(s *state, cmd command) error {
 
 	err := s.db.ResetUsers(context.Background())
 	if err != nil {
-		log.Fatal("couldn't delete users: %v", err)
+		log.Fatalf("couldn't delete users: %v", err)
 	}
 
 	fmt.Println("Database reset successfully!")
