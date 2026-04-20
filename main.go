@@ -44,6 +44,7 @@ func main() {
 	}
 	commands.register("login", handlerLogin)
 	commands.register("register", handlerRegister)
+	commands.register("reset", handlerReset)
 
 	cmd := command{
 		Name: args[1],
