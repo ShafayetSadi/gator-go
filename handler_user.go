@@ -10,6 +10,26 @@ import (
 	"github.com/shafayetsadi/gator/internal/database"
 )
 
+func handlerUsers(s *state, cmd command) error {
+	if len(cmd.Args) != 0 {
+		return fmt.Errorf("usage: %s", cmd.Name)
+	}
+
+	users, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("couldn't list users: %w", err)
+	}
+
+	for _, user := range users {
+		if user.Username == s.config.CurrentUserName {
+			fmt.Printf(" * %s (current)\n", user.Username)
+			continue
+		}
+		fmt.Printf(" * %s\n", user.Username)
+	}
+	return nil
+}
+
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: %s <name>", cmd.Name)
