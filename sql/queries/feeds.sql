@@ -16,3 +16,6 @@ WHERE url = $1;
 
 -- name: ResetFeeds :exec
 DELETE FROM feeds;
+
+-- name: GetFeeds :many
+SELECT * FROM feeds;
