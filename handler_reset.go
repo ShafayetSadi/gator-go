@@ -16,6 +16,11 @@ func handlerReset(s *state, cmd command) error {
 		log.Fatalf("couldn't delete users: %v", err)
 	}
 
+	err = s.db.ResetFeeds(context.Background())
+	if err != nil {
+		log.Fatalf("couldn't delete feeds: %v", err)
+	}
+
 	fmt.Println("Database reset successfully!")
 	return nil
 }
