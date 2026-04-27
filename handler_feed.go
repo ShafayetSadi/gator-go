@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -14,16 +15,26 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("usage: %s <name> <url>", cmd.Name)
 	}
 
-	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
-		ID:        uuid.New(),
-		Name:      cmd.Args[0],
-		Url:       cmd.Args[1],
-		UserID:    user.ID,
-		CreatedAt: time.Now().UTC(),
-		UpdatedAt: time.Now().UTC(),
-	})
+	name := cmd.Args[0]
+	url := cmd.Args[1]
+
+	feed, err := s.db.GetFeedByURL(context.Background(), url)
 	if err != nil {
-		return fmt.Errorf("couldn't create feed: %w", err)
+		if err == sql.ErrNoRows {
+			feed, err = s.db.CreateFeed(context.Background(), database.CreateFeedParams{
+				ID:        uuid.New(),
+				Name:      cmd.Args[0],
+				Url:       cmd.Args[1],
+				UserID:    user.ID,
+				CreatedAt: time.Now().UTC(),
+				UpdatedAt: time.Now().UTC(),
+			})
+			if err != nil {
+				return fmt.Errorf("couldn't create feed: %w", err)
+			}
+		} else {
+			return fmt.Errorf("couldn't get feed: %w", err)
+		}
 	}
 
 	feedFollow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
@@ -37,7 +48,11 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 		return fmt.Errorf("couldn't create feed follow: %w", err)
 	}
 
-	fmt.Println("Feed created successfully:")
+	if feed.Name == name {
+		fmt.Println("Feed created successfully:")
+	} else {
+		fmt.Println("Feed already existed:")
+	}
 	printFeed(feed)
 	fmt.Println()
 	fmt.Println("Feed followed successfully:")
@@ -85,4 +100,5 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* Name:          %s\n", feed.Name)
 	fmt.Printf("* URL:           %s\n", feed.Url)
 	fmt.Printf("* UserID:        %s\n", feed.UserID)
+	fmt.Printf("* LastFetchedAt: %s\n", feed.LastFetchedAt.Time)
 }
