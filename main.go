@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"os"
@@ -14,6 +15,16 @@ import (
 type state struct {
 	db     *database.Queries
 	config *config.Config
+}
+
+func middlewareLoggedIn(handler func(s *state, cmd command, user database.User) error) func(*state, command) error {
+	return func(s *state, c command) error {
+		user, err := s.db.GetUser(context.Background(), s.config.CurrentUserName)
+		if err != nil {
+			return err
+		}
+		return handler(s, c, user)
+	}
 }
 
 func main() {
@@ -42,13 +53,16 @@ func main() {
 	commands := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
-	commands.register("login", handlerLogin)
 	commands.register("register", handlerRegister)
+	commands.register("login", handlerLogin)
 	commands.register("reset", handlerReset)
 	commands.register("users", handlerUsers)
 	commands.register("agg", handlerAgg)
-	commands.register("addfeed", handlerAddFeed)
+	commands.register("addfeed", middlewareLoggedIn(handlerAddFeed))
 	commands.register("feeds", handlerFeeds)
+	commands.register("follow", middlewareLoggedIn(handlerFollow))
+	commands.register("unfollow", middlewareLoggedIn(handlerUnfollow))
+	commands.register("following", middlewareLoggedIn(handlerListFeedFollows))
 
 	cmd := command{
 		Name: args[1],
