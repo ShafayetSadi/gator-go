@@ -1,4 +1,4 @@
-module github.com/shafayetsadi/gator
+module github.com/shafayetsadi/gator-go
 
 go 1.25.7
 

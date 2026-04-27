@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/shafayetsadi/gator/internal/config"
-	"github.com/shafayetsadi/gator/internal/database"
+	"github.com/shafayetsadi/gator-go/internal/config"
+	"github.com/shafayetsadi/gator-go/internal/database"
 
 	_ "github.com/lib/pq"
 )

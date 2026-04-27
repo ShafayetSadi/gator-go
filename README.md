@@ -23,7 +23,9 @@ After that, make sure your Go bin directory is on your `PATH` so you can run:
 gator
 ```
 
-> Go programs are statically compiled binaries. After running `go build` or `go install`, you should be able to run the program without needing the Go toolchain.
+> Go programs are statically compiled binaries. After running `go build`
+> or `go install`, you should be able to run the program without needing
+> the Go toolchain.
 >
 > `go run .` is for development only.
 
